@@ -6,21 +6,44 @@ use std::net::TcpStream;
 use std::thread::spawn;
 
 fn main() {
-    let mut stream = TcpStream::connect("127.0.0.1:8889").unwrap();
-    let mut read_stream = stream.try_clone().unwrap();
+    //
+    // Устанавливаем TCP-соединение с сервером.
+    //
 
-    spawn(move || {
-        let reader = BufReader::new(&mut read_stream);
-        for message in reader.lines().map(|v| v.unwrap()) {
-            println!("{message}");
-        }
-    });
+    let connection = TcpStream::connect("localhost:8889").unwrap();
 
-    let handle = spawn(move || {
-        for message in stdin().lines().map(|line| line.unwrap()) {
-            stream.write_all(format!("{message}\n").as_bytes()).unwrap();
-        }
-    });
+    //
+    // Запускаем первый поток, читающий сообщения от сервера.
+    //
 
-    handle.join().unwrap();
+    let connection_read = connection.try_clone().unwrap();
+    let read_thread = spawn(move || read_messages_from_server_write_to_terminal(connection_read));
+
+    //
+    // Запускаем второй поток, читающий сообщения из терминала и отравляющий их на сервер.
+    //
+
+    spawn(move || read_messages_from_terminal_write_to_server(connection));
+
+    //
+    // Блокируем программу до тех пор, пока поток, читающий сообщения от сервера, не завершится.
+    // А завершится этот поток только в случае разрыва соединения с сервером.
+    //
+
+    read_thread.join().unwrap();
+}
+
+fn read_messages_from_server_write_to_terminal(connection: TcpStream) {
+    let reader = BufReader::new(connection);
+    for message in reader.lines().map(|maybe_message| maybe_message.unwrap()) {
+        println!("{}", message);
+    }
+}
+
+fn read_messages_from_terminal_write_to_server(mut connection: TcpStream) {
+    for message in stdin().lines().map(|maybe_message| maybe_message.unwrap()) {
+        connection
+            .write_all(format!("{message}\n").as_bytes())
+            .unwrap();
+    }
 }

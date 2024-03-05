@@ -51,15 +51,15 @@ impl Command {
 }
 
 pub struct Login {
-    pub id: Uuid,
+    pub id: String,
 }
 
 impl Login {
-    pub const COMMAND_NAME: &'static str = "login_user";
+    pub const COMMAND_NAME: &'static str = "login";
 
     pub fn new(input: impl Iterator<Item = char>) -> Result<Self, Error> {
         Ok(Self {
-            id: Uuid::parse_str(&input.collect::<String>()).map_err(|_| Error::InvalidUuid)?,
+            id: input.collect::<String>().trim().to_string(),
         })
     }
 }
@@ -103,7 +103,7 @@ impl MessageWithMentions {
 }
 
 pub struct Message {
-    message: String,
+    pub message: String,
 }
 
 impl Message {
@@ -193,7 +193,7 @@ mod test {
         let samples = vec![
             "%add_user e634488a-a14e-4166-903c-56ac9f37f8e9 normal",
             "%remove_user e634488a-a14e-4166-903c-56ac9f37f8e9",
-            "%login_user e634488a-a14e-4166-903c-56ac9f37f8e9",
+            "%login e634488a-a14e-4166-903c-56ac9f37f8e9",
             "%show_users",
             "@Roma @Alex Пацаны, помогите распарсить",
             "Good bye, world!",
