@@ -1,7 +1,4 @@
 use simple_chat::commands::Command;
-use simple_chat::commands::Message;
-use simple_chat::commands::CMD_BYE;
-use simple_chat::commands::CMD_WHOAMI;
 use simple_chat::error::Error;
 use std::collections::HashMap;
 use std::io::BufRead;
