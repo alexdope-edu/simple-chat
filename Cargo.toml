@@ -11,6 +11,14 @@ path = "src/client.rs"
 name = "server"
 path = "src/server.rs"
 
+[[bin]]
+name = "homework"
+path = "src/homework.rs"
+
+[[bin]]
+name = "homework2"
+path = "src/homework2.rs"
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -16,7 +16,7 @@ fn main() {
     // Запускаем первый поток, читающий сообщения от сервера.
     //
 
-    let connection_read = connection.try_clone().unwrap();
+    let connection_read = connection.try_clone().unwrap(); // клонируем, чтобы отдать в поток?
     let read_thread = spawn(move || read_messages_from_server_write_to_terminal(connection_read));
 
     //
